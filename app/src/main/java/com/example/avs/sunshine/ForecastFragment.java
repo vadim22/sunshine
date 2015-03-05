@@ -144,7 +144,8 @@ public class ForecastFragment extends Fragment {
             final String OWM_TEMPERATURE = "temp";
             final String OWM_MAX = "max";
             final String OWM_MIN = "min";
-            final String OWM_DESCRIPTION = "main";
+            final String OWM_MAIN = "main";
+            final String OWM_DESCRIPTION = "description";
 
             JSONObject forecastJson = new JSONObject(forecastJsonStr);
             JSONArray weatherArray = forecastJson.getJSONArray(OWM_LIST);
@@ -167,8 +168,9 @@ public class ForecastFragment extends Fragment {
             for(int i = 0; i < weatherArray.length(); i++) {
                 // For now, using the format "Day, description, hi/low"
                 String day;
-                String description;
+                String main;
                 String highAndLow;
+                String description;
 
                 // Get the JSON object representing the day
                 JSONObject dayForecast = weatherArray.getJSONObject(i);
@@ -178,7 +180,9 @@ public class ForecastFragment extends Fragment {
 
                 // description is in a child array called "weather", which is 1 element long.
                 JSONObject weatherObject = dayForecast.getJSONArray(OWM_WEATHER).getJSONObject(0);
+                main = weatherObject.getString(OWM_MAIN);
                 description = weatherObject.getString(OWM_DESCRIPTION);
+
 
 
                 // Temperatures are in a child object called "temp".  Try not to name variables
@@ -188,7 +192,7 @@ public class ForecastFragment extends Fragment {
                 double low = temperatureObject.getDouble(OWM_MIN);
 
                 highAndLow = formatHighLows(high, low, unitType);
-                resultStr[i] = day + " : " + description + " : " + highAndLow;
+                resultStr[i] = day + " : " + main + " (" + description + ") : " + highAndLow;
             }
 
 //            for (String s : resultStr) {
@@ -206,7 +210,7 @@ public class ForecastFragment extends Fragment {
             // Will contain the raw JSON response as a string.
             String forecastJsonStr = null;
             String units = "metric";
-            int numDays = 7;
+            int numDays = 10;
             String language = "EN";
 
             try {
@@ -224,7 +228,7 @@ public class ForecastFragment extends Fragment {
                         .appendQueryParameter(QUERY_PARAM, params[0])
                         .appendQueryParameter(UNITS_PARAM, units)
                         .appendQueryParameter(CNT_PARAM, Integer.toString(numDays))
-//                        .appendQueryParameter(LANG_PARAM, language)
+                        .appendQueryParameter(LANG_PARAM, language)
                         .build();
 
                 Log.v(LOG_TAG,"Built Uri " + builtUri.toString());
